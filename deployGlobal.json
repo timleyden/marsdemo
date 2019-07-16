@@ -129,7 +129,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[concat(parameters('TemplateStorageUri'),'azuretemplates/deploySharedResources.json',parameters('containerSasToken'))]",
+                    "uri": "[concat(parameters('TemplateStorageUri'),'deploySharedResources.json',parameters('containerSasToken'))]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
