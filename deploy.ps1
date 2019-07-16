@@ -31,7 +31,7 @@ $StartTime = Get-Date
 $EndTime = $startTime.AddHours(2.0)   
 $artifactStorageSAStoken = New-AzStorageAccountSASToken -Context $storageAccount.Context -Permission "rl" -StartTime $StartTime -ExpiryTime $EndTime -Service Blob -ResourceType Service,Container,Object
 $params.Add("containerSasToken",$artifactStorageSAStoken)
-$params.Add("TemplateStorageUri",$storageAccount.PrimaryEndpoints.Blob)
+$params.Add("TemplateStorageUri",$storageAccount.PrimaryEndpoints.Blob + "azuretemplates/")
 $params.Add("DeploymentPrefix",$prefix)
 $params.Add("Environment",$environment)
 #start global deployment
