@@ -1,0 +1,145 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.1",
+    "parameters": {
+        "TemplateStorageUri": {
+            "type": "string",
+            "allowedValue":"https://raw.githubusercontent.com/timleyden/marsdemo/master/",
+            "metadata": {
+                "description": ""
+            }
+        },
+        "containerSasToken": {
+            "type": "string"
+        },
+        "DeploymentPrefix": {
+            "type": "string",
+            "defaultValue": "DEMO",
+            "metadata": {
+                "description": ""
+            }
+        },
+        "Environment": {
+            "type": "string",
+            "allowedValues": [
+                "DEV",
+                "TEST",
+                "PROD"
+            ],
+            "defaultValue": "PROD",
+            "metadata": {
+                "description": ""
+            }
+        }
+    },
+    "variables": {
+        "NamingStandard": "[concat(parameters('DeploymentPrefix'),'-BACKUP-',parameters('Environment'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2018-05-01",
+            "location": "centralus",
+            "name": "[concat(variables('NamingStandard'),'-SHARED')]",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2018-05-01",
+            "location": "centralus",
+            "name": "[concat(variables('NamingStandard'),'-NA')]",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2018-05-01",
+            "location": "canadacentral",
+            "name": "[concat(variables('NamingStandard'),'-CAN')]",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "NorthAmericaDeployment",
+            "resourceGroup": "[concat(variables('NamingStandard'),'-NA')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups/', concat(variables('NamingStandard'),'-NA'))]",
+                "SharedResourcesDeployment"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('TemplateStorageUri'),'azuretemplates/deployVaults.json',parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "locations": {
+                        "value": [
+                            "westus",
+                            "centralus"
+                        ]
+                    },
+                    "diagnosticWorkspaceId": {
+                        "value": "[reference('SharedResourcesDeployment').outputs.workspaceID.value]"
+                    },
+                    "VaultPrefix": {
+                        "value": "[variables('NamingStandard')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "CanadaDeployment",
+            "resourceGroup": "[concat(variables('NamingStandard'),'-CAN')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups/',concat(variables('NamingStandard'),'-CAN'))]",
+                "SharedResourcesDeployment"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('TemplateStorageUri'),'azuretemplates/deployVaults.json',parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "locations": {
+                        "value": [
+                            "canadacentral"
+                        ]
+                    },
+                    "diagnosticWorkspaceId": {
+                        "value": "[reference('SharedResourcesDeployment').outputs.workspaceID.value]"
+                    },
+                    "VaultPrefix": {
+                        "value": "[variables('NamingStandard')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "SharedResourcesDeployment",
+            "resourceGroup": "[concat(variables('NamingStandard'),'-SHARED')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups/', concat(variables('NamingStandard'),'-SHARED'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('TemplateStorageUri'),'azuretemplates/deploySharedResources.json',parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    
+                    "Prefix": {
+                        "value": "[variables('NamingStandard')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}

@@ -1,0 +1,77 @@
+{
+    "servers": [
+        {
+            "serverName": "fileshare01",
+            "backupVolumes": [
+                "C:\\temp",
+                "C:\\Wrong"
+                ],
+            
+            "targetVault": "DEMO-Backup-PROD-RSV-centralus",
+            "throttleSettings":"No Throttle",
+            "excludeFolders":["c:\\windows"]
+
+        },
+        {
+            "serverName": "web01",
+            "backupVolumes": [
+                "C:\\",
+                "D:\\"
+                ],
+            
+            "targetVault": "DEMO-Backup-PROD-RSV-westus",
+            "throttleSettings":"No Throttle"
+        },
+        {
+            "serverName": "web02",
+            "backupVolumes": [
+                "C:\\",
+                "D:\\"
+                ],
+            
+            "targetVault": "DEMO-Backup-PROD-RSV-westus",
+            "throttleSettings":"No Throttle"
+        },
+        {
+            "serverName": "app",
+            "backupVolumes": [
+                "C:\\",
+                "D:\\"
+                ],
+            
+            "targetVault": "DEMO-Backup-PROD-RSV-centralus",
+            "throttleSettings":"No Throttle"
+        },
+        {
+            "serverName": "sql",
+            "backupVolumes": [
+                "C:\\",
+                "D:\\"
+                ],
+            
+            "targetVault": "DEMO-Backup-PROD-RSV-centralus",
+            "throttleSettings":"No Throttle"
+        },
+        { "serverName": "default",
+            "backupVolumes": [
+                "D:\\"
+            ],
+            "targetVault": "DEMO-Backup-PROD-RSV-westus",
+            "BackupSchedule":{
+                "daysOfTheWeek":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+                "timesOfDay":"18:00"
+            },
+            "retentionPolicy":{
+                "daily":7,
+                "weekly":5,
+                "weeklyDay":"Friday",
+                "monthly":13,
+                "monthlyWeek":"Last",
+                "yearly":7,
+                "yearlyMonth":"December"
+            },
+            "excludeFolders":["C:\\temp","c:\\windows"],
+            "throttleSettings":"No Throttle"
+        }
+    ]
+}

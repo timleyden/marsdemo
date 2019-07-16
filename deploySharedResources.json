@@ -1,0 +1,58 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "Prefix": {
+           "type": "string",
+           "metadata": {
+                "description": ""
+            }
+        }
+    },
+    "variables": {
+        
+    },
+    "resources": [
+        
+            {
+                "type": "Microsoft.OperationalInsights/workspaces",
+                "name": "[concat(parameters('Prefix'),'-BackupWorkspace')]",
+                "apiVersion": "2015-11-01-preview",
+                "location": "[resourceGroup().location]",
+                "properties": {
+                    "sku": {
+                        "name": "Free"
+                    },
+                "retentionInDays": 7
+                }
+            },{
+               "type": "Microsoft.KeyVault/vaults",
+               "apiVersion": "2018-02-14",
+               "name": "[concat(parameters('Prefix'),'-KV')]",
+               "location": "[resourceGroup().location]",
+               "tags": {
+                    "displayName": "Backup Key Vault"
+               },
+               "properties": {
+                    "enabledForDeployment": true,
+                    "enabledForTemplateDeployment": true,
+                    "enabledForDiskEncryption": true,
+                    "tenantId":"[subscription().tenantId]",
+                    "accessPolicies": [], 
+                    "sku": {
+                        "name": "standard",
+                        "family": "A"
+                    }
+                }
+                
+            }
+
+        
+    ],
+    "outputs": {
+        "workspaceID": {
+           "type": "string",
+           "value": "[resourceId('Microsoft.OperationalInsights/workspaces', concat(parameters('Prefix'),'-BackupWorkspace'))]"
+        }
+    }
+}

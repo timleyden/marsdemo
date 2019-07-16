@@ -1,0 +1,97 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "locations": {
+            "type": "array",
+            "metadata": {
+                "description": ""
+            },
+            "allowedValues": [
+                "centralus",
+                "westus",
+                "eastus",
+                "eastus2",
+                "canadacentral",
+                "canadaeast"
+            ],
+            "defaultValue": [
+                "centralus",
+                "westus"
+            ]
+        },
+        "diagnosticWorkspaceId": {
+            "type": "string",
+            "metadata": {
+                "description": ""
+            }
+        },"VaultPrefix": {
+           "type": "string",
+           "metadata": {
+                "description": ""
+            }
+        }
+       
+    },
+    "variables": {
+        "valutCount": "[length(parameters('locations'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.RecoveryServices/vaults",
+            "apiVersion": "2018-01-10",
+            "properties":{},
+            "name": "[concat(parameters('VaultPrefix'),'-RSV-',parameters('locations')[copyIndex()])]",
+            "location": "[parameters('locations')[copyIndex()]]",
+            "copy": {
+                "name": "rsvloop",
+                "count": "[variables('valutCount')]"
+            },
+            "sku": {
+                "name": "RS0",
+                "tier": "Standard"
+            },
+            "resources": [
+                {
+                "type": "providers/diagnosticSettings",
+                "name": "[concat('Microsoft.Insights/', 'sendDiagnosticsToStorageAndLogAnalytics')]",
+                "dependsOn": [
+                    "[resourceId('Microsoft.RecoveryServices/vaults',concat(parameters('VaultPrefix'),'-RSV-',parameters('locations')[copyIndex()]))]"
+                ],
+                "apiVersion": "2017-05-01-preview",
+                "properties": {
+                    "name": "Send Diagnostics To Storage And LogAnalytics",
+                    
+                    "workspaceId": "[parameters('diagnosticWorkspaceId')]",
+                    "logs": [
+                        {
+                            "category": "AzureBackupReport",
+                            "enabled": true,
+                            "retentionPolicy": {
+                                "days": 31,
+                                "enabled": true
+                            }
+                        }
+                    ]
+                }
+            }]
+        },
+        
+        {
+            "type": "Microsoft.RecoveryServices/vaults/backupstorageconfig",
+            "name": "[concat(parameters('VaultPrefix'),'-RSV-',parameters('locations')[copyIndex()],'/vaultstorageconfig')]",
+            "copy": {
+                "name": "rsvsettingsloop",
+                "count": "[variables('valutCount')]"
+            },
+            "apiVersion": "2018-01-10",
+            "dependsOn": [
+                "[resourceId('Microsoft.RecoveryServices/vaults/', concat(parameters('VaultPrefix'),'-RSV-',parameters('locations')[copyIndex()]))]"
+            ],
+            "properties": {
+                "StorageModelType": "LocallyRedundant"
+            }
+        }
+    ],
+    "outputs": {}
+}
