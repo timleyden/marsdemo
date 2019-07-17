@@ -21,12 +21,12 @@ if ($ServicePrincipalName) {
     Login-AzAccount -ServicePrincipal  -Credential $pscredential -Tenant $Tenantid
 }
 #region variables
-$temppath = "$($env:Temp)\MARS\"
-$MarsAURL = "https://aka.ms/Azurebackup_Agent"
+$tempPath = "$($env:Temp)\MARS\"
+$MarsURL = "https://aka.ms/Azurebackup_Agent"
 $computerName = $env:COMPUTERNAME
 #endregion
 #region load config from keyvault
-$backupconfigSecret = Get-AzKeyVaultSecret -VaultName $KeyVaultName -Name "BackupConfig"
+$backupconfigSecret = Get-AzKeyVaultSecret -VaultName $KeyVaultName -Name "BackupConfig" 
 if ($backupconfigSecret -eq $null) {
     write-error "unable to load backup config"
     return
@@ -42,6 +42,7 @@ if ($serverconfig -eq $null) {
 else {
     write-verbose "found server in config file"
 }
+#this function is checking to see if we need to use default values for anything
 CheckPropertyAndSetDefault $serverconfig "targetVault" $defaultconfig
 CheckPropertyAndSetDefault $serverconfig "bakcupVolumes" $defaultconfig
 CheckPropertyAndSetDefault $serverConfig "backupSchedule" $defaultconfig
@@ -70,12 +71,12 @@ else {
 #region register agent with vault
 #get vault creds
 Write-Verbose "Setting Vault context $($VaultName)"
-$Vault = Get-AzRecoveryServicesVault -Name $VaultName
+$Vault = Get-AzRecoveryServicesVault -Name $VaultName 
 if ($Vault -eq $null) {
     Write-Error "Unable to find vault using specified vault name $($vaultname) using the credentials provided"
 }
 else {
-    Set-AzRecoveryServicesASRVaultContext -vault $Vault 
+    Set-AzRecoveryServicesVaultContext -vault $Vault 
     #generate certificate for 
     $dt = $(Get-Date).ToString("M-d-yyyy")
     $cert = New-SelfSignedCertificate -CertStoreLocation Cert:\CurrentUser\My -FriendlyName  $($vault.Name + $subscriptionid + '-' + $dt + '-vaultcredentials') -subject "Windows Azure Tools" -KeyExportPolicy Exportable -NotAfter $(Get-Date).AddHours(48) -NotBefore $(Get-Date).AddHours(-24) -KeyProtection None -KeyUsage None -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.2") -Provider "Microsoft Enhanced Cryptographic Provider v1.0"
