@@ -46,24 +46,24 @@
         {
             "type": "Microsoft.Resources/resourceGroups",
             "apiVersion": "2018-05-01",
-            "location": "centralus",
-            "name": "[concat(variables('NamingStandard'),'-NA')]",
+            "location": "australiaeast",
+            "name": "[concat(variables('NamingStandard'),'-AU')]",
             "properties": {}
         },
         {
             "type": "Microsoft.Resources/resourceGroups",
             "apiVersion": "2018-05-01",
-            "location": "canadacentral",
-            "name": "[concat(variables('NamingStandard'),'-CAN')]",
+            "location": "centralus",
+            "name": "[concat(variables('NamingStandard'),'-US')]",
             "properties": {}
         },
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2018-05-01",
-            "name": "NorthAmericaDeployment",
-            "resourceGroup": "[concat(variables('NamingStandard'),'-NA')]",
+            "name": "AustraliaDeployment",
+            "resourceGroup": "[concat(variables('NamingStandard'),'-AU')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups/', concat(variables('NamingStandard'),'-NA'))]",
+                "[resourceId('Microsoft.Resources/resourceGroups/', concat(variables('NamingStandard'),'-AU'))]",
                 "SharedResourcesDeployment"
             ],
             "properties": {
@@ -75,8 +75,8 @@
                 "parameters": {
                     "locations": {
                         "value": [
-                            "westus",
-                            "centralus"
+                            "australiaeast",
+                            "australiasoutheast"
                         ]
                     },
                     "diagnosticWorkspaceId": {
@@ -91,10 +91,10 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2018-05-01",
-            "name": "CanadaDeployment",
-            "resourceGroup": "[concat(variables('NamingStandard'),'-CAN')]",
+            "name": "UnitiedStatesDeployment",
+            "resourceGroup": "[concat(variables('NamingStandard'),'-US')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups/',concat(variables('NamingStandard'),'-CAN'))]",
+                "[resourceId('Microsoft.Resources/resourceGroups/',concat(variables('NamingStandard'),'-US'))]",
                 "SharedResourcesDeployment"
             ],
             "properties": {
@@ -106,7 +106,9 @@
                 "parameters": {
                     "locations": {
                         "value": [
-                            "canadacentral"
+                            "westus",
+                            "centralus",
+                            "eastus"
                         ]
                     },
                     "diagnosticWorkspaceId": {
