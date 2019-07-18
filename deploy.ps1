@@ -35,4 +35,4 @@ $params.Add("TemplateStorageUri",$storageAccount.PrimaryEndpoints.Blob + "azuret
 $params.Add("DeploymentPrefix",$prefix)
 $params.Add("Environment",$environment)
 #start global deployment
-New-AzDeployment -Location $location -Name "$($Prefix)Backup$($enviornment)Deployment" -TemplateFile .\deployGlobal.json -TemplateParameterObject $params
+New-AzDeployment -Location $location -Name "$($Prefix)Backup$($enviornment)Deployment" -TemplateFile .\azureDeploy.json -TemplateParameterObject $params
